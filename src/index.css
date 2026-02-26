@@ -112,8 +112,3 @@
   }
 }
 
-/* Leaflet overrides */
-.leaflet-container {
-  font-family: 'Inter', sans-serif !important;
-  z-index: 0;
-}
