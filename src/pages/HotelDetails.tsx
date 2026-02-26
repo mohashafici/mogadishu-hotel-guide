@@ -1,7 +1,4 @@
 import { useParams, Link } from "react-router-dom";
-import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
-import L from "leaflet";
-import "leaflet/dist/leaflet.css";
 import {
   ArrowLeft,
   MapPin,
@@ -21,14 +18,6 @@ import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
 import { hotels, amenityLabels } from "@/data/hotels";
 import { useState } from "react";
-
-// Fix leaflet icons
-delete (L.Icon.Default.prototype as any)._getIconUrl;
-L.Icon.Default.mergeOptions({
-  iconRetinaUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
-  iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
-  shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
-});
 
 const amenityIcons: Record<string, React.ReactNode> = {
   wifi: <Wifi size={18} />,
@@ -69,7 +58,6 @@ const HotelDetails = () => {
 
       <main className="flex-1">
         <div className="container py-8 space-y-8">
-          {/* Back link */}
           <Link
             to="/"
             className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors"
@@ -104,7 +92,6 @@ const HotelDetails = () => {
           </div>
 
           <div className="grid lg:grid-cols-[1fr_360px] gap-8">
-            {/* Left content */}
             <div className="space-y-8">
               <div>
                 <h1 className="text-3xl font-bold text-foreground">{hotel.name}</h1>
@@ -119,7 +106,6 @@ const HotelDetails = () => {
                 <p className="text-muted-foreground leading-relaxed">{hotel.description}</p>
               </div>
 
-              {/* Amenities */}
               <div>
                 <h2 className="text-lg font-semibold text-foreground mb-3">Amenities</h2>
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
@@ -135,7 +121,6 @@ const HotelDetails = () => {
                 </div>
               </div>
 
-              {/* Room types */}
               <div>
                 <h2 className="text-lg font-semibold text-foreground mb-3">Room Types</h2>
                 <div className="space-y-2">
@@ -151,29 +136,21 @@ const HotelDetails = () => {
                 </div>
               </div>
 
-              {/* Map */}
+              {/* Location map */}
               <div>
                 <h2 className="text-lg font-semibold text-foreground mb-3">Location</h2>
                 <div className="h-[300px] rounded-lg overflow-hidden border border-border">
-                  <MapContainer
-                    center={[hotel.lat, hotel.lng]}
-                    zoom={15}
-                    className="w-full h-full"
-                    scrollWheelZoom={false}
-                  >
-                    <TileLayer
-                      attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-                      url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                    />
-                    <Marker position={[hotel.lat, hotel.lng]}>
-                      <Popup>{hotel.name}</Popup>
-                    </Marker>
-                  </MapContainer>
+                  <iframe
+                    title={`${hotel.name} location`}
+                    className="w-full h-full border-0"
+                    src={`https://www.openstreetmap.org/export/embed.html?bbox=${hotel.lng - 0.01},${hotel.lat - 0.005},${hotel.lng + 0.01},${hotel.lat + 0.005}&layer=mapnik&marker=${hotel.lat},${hotel.lng}`}
+                    allowFullScreen
+                  />
                 </div>
               </div>
             </div>
 
-            {/* Right sidebar — contact */}
+            {/* Contact sidebar */}
             <div className="space-y-4 lg:sticky lg:top-24 self-start">
               <div className="bg-card border border-border rounded-lg p-6 space-y-4">
                 <h3 className="font-semibold text-foreground">Contact This Hotel</h3>

@@ -1,27 +1,21 @@
-import { useEffect, useRef, useState } from "react";
-import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { MapPin } from "lucide-react";
-import L from "leaflet";
-import "leaflet/dist/leaflet.css";
 import type { Hotel } from "@/data/hotels";
-
-// Fix leaflet default icon issue
-delete (L.Icon.Default.prototype as any)._getIconUrl;
-L.Icon.Default.mergeOptions({
-  iconRetinaUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
-  iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
-  shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
-});
 
 const MapSection = ({ hotels }: { hotels: Hotel[] }) => {
   const [selected, setSelected] = useState<string | null>(null);
+  const selectedHotel = hotels.find((h) => h.id === selected);
+  const center = selectedHotel
+    ? `${selectedHotel.lat},${selectedHotel.lng}`
+    : "2.0469,45.3182";
+  const zoom = selectedHotel ? 16 : 13;
 
   return (
     <section id="map" className="py-16 bg-secondary">
       <div className="container">
         <h2 className="text-2xl font-bold text-foreground mb-8">Explore on Map</h2>
-        <div className="grid lg:grid-cols-[340px_1fr] gap-6 rounded-lg overflow-hidden border border-border bg-card">
+        <div className="grid lg:grid-cols-[340px_1fr] gap-0 rounded-lg overflow-hidden border border-border bg-card">
           {/* Sidebar list */}
           <div className="max-h-[500px] overflow-y-auto divide-y divide-border">
             {hotels.map((h) => (
@@ -41,35 +35,14 @@ const MapSection = ({ hotels }: { hotels: Hotel[] }) => {
             ))}
           </div>
 
-          {/* Map */}
+          {/* Map — OpenStreetMap iframe */}
           <div className="h-[500px]">
-            <MapContainer
-              center={[2.0469, 45.3182]}
-              zoom={13}
-              className="w-full h-full"
-              scrollWheelZoom={false}
-            >
-              <TileLayer
-                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-              />
-              {hotels.map((h) => (
-                <Marker key={h.id} position={[h.lat, h.lng]}>
-                  <Popup>
-                    <div className="text-sm">
-                      <p className="font-semibold">{h.name}</p>
-                      <p className="text-muted-foreground">{h.district}</p>
-                      <Link
-                        to={`/hotel/${h.id}`}
-                        className="text-accent underline text-xs mt-1 block"
-                      >
-                        View Details →
-                      </Link>
-                    </div>
-                  </Popup>
-                </Marker>
-              ))}
-            </MapContainer>
+            <iframe
+              title="Hotel Map"
+              className="w-full h-full border-0"
+              src={`https://www.openstreetmap.org/export/embed.html?bbox=45.25,1.98,45.42,2.10&layer=mapnik&marker=${center}`}
+              allowFullScreen
+            />
           </div>
         </div>
       </div>
